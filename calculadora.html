@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Depreciación - Línea Recta</title>
+    <script src="https://kit.fontawesome.com/7c17e3fdd4.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            top: -250px;
+            left: -250px;
+            filter: blur(80px);
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            bottom: -200px;
+            right: -200px;
+            filter: blur(80px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(-5px);
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header i {
+            font-size: 50px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 25px;
+        }
+
+        .card h2 {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 i {
+            color: rgba(102, 126, 234, 0.8);
+        }
+
+        .formula-box {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .formula {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 24px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+
+        .formula-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            margin-top: 15px;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group small {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(102, 126, 234, 0.8);
+            font-size: 16px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .results-container {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .result-value {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .result-highlight {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .result-highlight .result-value {
+            font-size: 28px;
+            color: rgba(102, 126, 234, 1);
+        }
+
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(102, 126, 234, 0.2);
+            color: rgba(255, 255, 255, 0.95);
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.error {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid rgba(231, 76, 60, 0.4);
+            color: #e74c3c;
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Volver al inicio
+        </a>
+
+        <div class="header">
+            <i class="fas fa-chart-line"></i>
+            <h1>Calculadora de Depreciación</h1>
+            <p>Método de Línea Recta (LR)</p>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2><i class="fas fa-calculator"></i> Datos del Activo</h2>
+                
+                <div class="formula-box">
+                    <div class="formula">D<sub>t</sub> = (B - S) × d<sub>t</sub></div>
+                    <div class="formula">D<sub>t</sub> = (B - S) / n</div>
+                    <div class="formula-description">
+                        <strong>Donde:</strong><br>
+                        • D<sub>t</sub> = Cargo anual de depreciación<br>
+                        • B = Costo inicial o base no ajustada<br>
+                        • S = Valor de rescate estimado<br>
+                        • n = Periodo de recuperación (años)<br>
+                        • d<sub>t</sub> = Tasa de depreciación = 1/n
+                    </div>
+                </div>
+
+                <div class="message error" id="errorMessage">
+                    <i class="fas fa-exclamation-circle"></i> <span id="errorText">Por favor completa todos los campos</span>
+                </div>
+
+                <form id="depreciacionForm">
+                    <div class="input-group">
+                        <label for="costoInicial">
+                            Costo Inicial (B)
+                            <small>Base no ajustada del activo</small>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-dollar-sign"></i>
+                            <input type="number" id="costoInicial" placeholder="Ej: 50000" min="0" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="valorRescate">
+                            Valor de Rescate (S)
+                            <small>Valor estimado al final de su vida útil</small>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-dollar-sign"></i>
+                            <input type="number" id="valorRescate" placeholder="Ej: 5000" min="0" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="periodoRecuperacion">
+                            Periodo de Recuperación (n)
+                            <small>Vida útil en años</small>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-calendar-alt"></i>
+                            <input type="number" id="periodoRecuperacion" placeholder="Ej: 10" min="1" step="1" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <i class="fas fa-calculator"></i> Calcular Depreciación
+                    </button>
+
+                    <button type="button" class="btn btn-secondary" id="limpiarBtn">
+                        <i class="fas fa-redo"></i> Limpiar
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-chart-bar"></i> Resultados</h2>
+                
+                <div id="resultsContainer">
+                    <div class="empty-state">
+                        <i class="fas fa-calculator"></i>
+                        <p>Ingresa los datos del activo para calcular su depreciación</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('depreciacionForm');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const errorMessage = document.getElementById('errorMessage');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const B = parseFloat(document.getElementById('costoInicial').value);
+            const S = parseFloat(document.getElementById('valorRescate').value);
+            const n = parseInt(document.getElementById('periodoRecuperacion').value);
+
+            errorMessage.style.display = 'none';
+
+            // Validaciones
+            if (isNaN(B) || isNaN(S) || isNaN(n)) {
+                showError('Por favor completa todos los campos correctamente');
+                return;
+            }
+
+            if (B <= 0) {
+                showError('El costo inicial debe ser mayor a 0');
+                return;
+            }
+
+            if (S < 0) {
+                showError('El valor de rescate no puede ser negativo');
+                return;
+            }
+
+            if (S >= B) {
+                showError('El valor de rescate debe ser menor al costo inicial');
+                return;
+            }
+
+            if (n <= 0) {
+                showError('El periodo de recuperación debe ser mayor a 0');
+                return;
+            }
+
+            // Calcular depreciación
+            calcularDepreciacion(B, S, n);
+        });
+
+        document.getElementById('limpiarBtn').addEventListener('click', function() {
+            form.reset();
+            resultsContainer.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-calculator"></i>
+                    <p>Ingresa los datos del activo para calcular su depreciación</p>
+                </div>
+            `;
+            errorMessage.style.display = 'none';
+        });
+
+        function calcularDepreciacion(B, S, n) {
+            // Cálculos principales
+            const dt = 1 / n; // Tasa de depreciación
+            const Dt = (B - S) / n; // Cargo anual de depreciación
+            const depreciacionTotal = B - S;
+
+            // Generar tabla de depreciación año por año
+            let tablaHTML = `
+                <div class="results-container">
+                    <div class="result-item">
+                        <span class="result-label">Tasa de Depreciación (d<sub>t</sub>)</span>
+                        <span class="result-value">${(dt * 100).toFixed(2)}%</span>
+                    </div>
+                    
+                    <div class="result-item result-highlight">
+                        <span class="result-label">Depreciación Anual (D<sub>t</sub>)</span>
+                        <span class="result-value">$${Dt.toFixed(2)}</span>
+                    </div>
+
+                    <div class="result-item">
+                        <span class="result-label">Depreciación Total</span>
+                        <span class="result-value">$${depreciacionTotal.toFixed(2)}</span>
+                    </div>
+
+                    <h3 style="color: rgba(255, 255, 255, 0.9); margin: 25px 0 15px 0; font-size: 18px;">
+                        <i class="fas fa-table"></i> Tabla de Depreciación por Año
+                    </h3>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Año (t)</th>
+                                    <th>Depreciación</th>
+                                    <th>Dep. Acumulada</th>
+                                    <th>Valor en Libros</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            let depreciacionAcumulada = 0;
+            for (let t = 1; t <= n; t++) {
+                depreciacionAcumulada += Dt;
+                const valorLibros = B - depreciacionAcumulada;
+                
+                tablaHTML += `
+                    <tr>
+                        <td>${t}</td>
+                        <td>$${Dt.toFixed(2)}</td>
+                        <td>$${depreciacionAcumulada.toFixed(2)}</td>
+                        <td>$${valorLibros.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+
+            tablaHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            resultsContainer.innerHTML = tablaHTML;
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            errorMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
