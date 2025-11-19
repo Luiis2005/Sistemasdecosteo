@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siistemas de costeo</title>
+    <title>Login - Fundamentos de computacion III</title>
     <script src="https://kit.fontawesome.com/7c17e3fdd4.js" crossorigin="anonymous"></script>
     <style>
         * {
@@ -217,6 +217,128 @@
             font-size: 14px;
             display: none;
         }
+
+        /* Estilos para modales */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header i {
+            font-size: 50px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .modal-header h3 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .modal-header p {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 10px;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .back-to-login {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .back-to-login a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-to-login a:hover {
+            color: #764ba2;
+        }
     </style>
 </head>
 <body>
@@ -266,7 +388,128 @@
         </form>
 
         <div class="register-link">
-            ¿No tienes cuenta? <a href="#">Regístrate aquí</a>
+            ¿No tienes cuenta? <a href="#" id="showRegister">Regístrate aquí</a>
+        </div>
+    </div>
+
+    <!-- Modal de Registro -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('registerModal')">×</button>
+            <div class="modal-header">
+                <i class="fas fa-user-plus"></i>
+                <h3>Crear Cuenta</h3>
+                <p>Completa el formulario para registrarte</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="input-group">
+                    <label for="regEmail">Correo Electrónico</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="regEmail" placeholder="correo@ejemplo.com" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="regUsername">Usuario</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="regUsername" placeholder="Elige un usuario" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="regPassword">Contraseña</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="regPassword" placeholder="Crea una contraseña" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="modal-btn">
+                    <i class="fas fa-check"></i> Crear Usuario
+                </button>
+
+                <div class="back-to-login">
+                    <a href="#" onclick="closeModal('registerModal')">Volver al inicio de sesión</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Recuperar Contraseña -->
+    <div class="modal-overlay" id="forgotModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('forgotModal')">×</button>
+            <div class="modal-header">
+                <i class="fas fa-key"></i>
+                <h3>Recuperar Contraseña</h3>
+                <p id="forgotStep1Text">Ingresa tu correo para continuar</p>
+                <p id="forgotStep2Text" style="display: none;">Ingresa el código enviado a tu correo</p>
+                <p id="forgotStep3Text" style="display: none;">Ingresa tu nueva contraseña</p>
+            </div>
+
+            <!-- Paso 1: Correo -->
+            <form id="forgotForm1" style="display: block;">
+                <div class="input-group">
+                    <label for="forgotEmail">Correo Electrónico</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="forgotEmail" placeholder="correo@ejemplo.com" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="modal-btn">
+                    <i class="fas fa-paper-plane"></i> Enviar Código
+                </button>
+
+                <div class="back-to-login">
+                    <a href="#" onclick="closeModal('forgotModal')">Volver al inicio de sesión</a>
+                </div>
+            </form>
+
+            <!-- Paso 2: Código -->
+            <form id="forgotForm2" style="display: none;">
+                <div class="input-group">
+                    <label for="securityCode">Código de Seguridad</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-shield-alt"></i>
+                        <input type="text" id="securityCode" placeholder="Ingresa el código 4444" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="modal-btn">
+                    <i class="fas fa-check"></i> Verificar Código
+                </button>
+
+                <div class="back-to-login">
+                    <a href="#" onclick="closeModal('forgotModal')">Cancelar</a>
+                </div>
+            </form>
+
+            <!-- Paso 3: Nueva Contraseña -->
+            <form id="forgotForm3" style="display: none;">
+                <div class="input-group">
+                    <label for="newPassword">Nueva Contraseña</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="newPassword" placeholder="Ingresa tu nueva contraseña" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">Confirmar Contraseña</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirmPassword" placeholder="Confirma tu contraseña" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="modal-btn">
+                    <i class="fas fa-save"></i> Actualizar Contraseña
+                </button>
+            </form>
         </div>
     </div>
 
@@ -275,6 +518,115 @@
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
 
+        // Función para cerrar modales
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            // Resetear formularios de recuperación
+            if (modalId === 'forgotModal') {
+                resetForgotPassword();
+            }
+        }
+
+        // Mostrar modal de registro
+        document.getElementById('showRegister').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('registerModal').classList.add('active');
+        });
+
+        // Mostrar modal de recuperar contraseña
+        document.querySelector('.forgot-password').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('forgotModal').classList.add('active');
+        });
+
+        // Cerrar modal al hacer clic fuera
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    if (this.id === 'forgotModal') {
+                        resetForgotPassword();
+                    }
+                }
+            });
+        });
+
+        // Formulario de registro
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simular creación de usuario
+            alert('¡Usuario creado exitosamente!');
+            
+            // Cerrar modal y limpiar formulario
+            closeModal('registerModal');
+            this.reset();
+        });
+
+        // Paso 1: Enviar correo
+        document.getElementById('forgotForm1').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgotEmail').value;
+            
+            if (email) {
+                // Ocultar paso 1, mostrar paso 2
+                document.getElementById('forgotForm1').style.display = 'none';
+                document.getElementById('forgotForm2').style.display = 'block';
+                document.getElementById('forgotStep1Text').style.display = 'none';
+                document.getElementById('forgotStep2Text').style.display = 'block';
+            }
+        });
+
+        // Paso 2: Verificar código
+        document.getElementById('forgotForm2').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('securityCode').value;
+            
+            if (code === '4444') {
+                // Ocultar paso 2, mostrar paso 3
+                document.getElementById('forgotForm2').style.display = 'none';
+                document.getElementById('forgotForm3').style.display = 'block';
+                document.getElementById('forgotStep2Text').style.display = 'none';
+                document.getElementById('forgotStep3Text').style.display = 'block';
+            } else {
+                alert('Código incorrecto. El código es 4444');
+                document.getElementById('securityCode').value = '';
+            }
+        });
+
+        // Paso 3: Nueva contraseña
+        document.getElementById('forgotForm3').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+            
+            if (newPass === confirmPass) {
+                alert('¡Contraseña actualizada exitosamente!');
+                closeModal('forgotModal');
+                resetForgotPassword();
+            } else {
+                alert('Las contraseñas no coinciden');
+                document.getElementById('confirmPassword').value = '';
+            }
+        });
+
+        // Función para resetear el proceso de recuperación
+        function resetForgotPassword() {
+            document.getElementById('forgotForm1').style.display = 'block';
+            document.getElementById('forgotForm2').style.display = 'none';
+            document.getElementById('forgotForm3').style.display = 'none';
+            document.getElementById('forgotStep1Text').style.display = 'block';
+            document.getElementById('forgotStep2Text').style.display = 'none';
+            document.getElementById('forgotStep3Text').style.display = 'none';
+            document.getElementById('forgotForm1').reset();
+            document.getElementById('forgotForm2').reset();
+            document.getElementById('forgotForm3').reset();
+        }
+
+        // Login original
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -297,7 +649,7 @@
                 
                 // Redirigir después de 1 segundo
                 setTimeout(function() {
-                    window.location.href = 'calculadora.html';
+                    window.location.href = 'index.html';
                 }, 1000);
             } else {
                 errorMessage.style.display = 'block';
@@ -317,20 +669,6 @@
                 document.getElementById('password').focus();
             }
         });
-
-        // Funcionalidad del enlace "Olvidaste tu contraseña"
-        document.querySelector('.forgot-password').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Por favor contacta al administrador para recuperar tu contraseña.');
-        });
-
-        // Funcionalidad del enlace de registro
-        document.querySelector('.register-link a').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Función de registro próximamente...');
-        });
     </script>
 </body>
-
 </html>
-
